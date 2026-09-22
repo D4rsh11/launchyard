@@ -9,7 +9,7 @@ const { Server } = require('socket.io')
 const Redis = require('ioredis')
 
 const app = express()
-const PORT = 9000
+const PORT = 9100
 
 const subscriber = new Redis(process.env.VALKEY_URL)
 
@@ -50,8 +50,22 @@ app.use(cors())
 app.use(express.json())
 
 app.post('/project', async (req, res) => {
-    const { gitURL, slug } = req.body
+    const { gitURL, slug, socketId } = req.body
     const projectSlug = slug ? slug : generateSlug()
+
+    const socket = io.sockets.sockets.get(socketId)
+
+    if (!socket) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Socket connection not found'
+        })
+    }
+    const logChannel = `logs:${projectSlug}`
+
+    socket.join(logChannel)
+
+    console.log(`Socket ${socketId} joined ${logChannel}`)
 
     // Spin the container
     const command = new RunTaskCommand({

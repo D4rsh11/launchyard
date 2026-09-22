@@ -66,11 +66,16 @@ export default function Home() {
         setDeployPreviewURL(undefined);
 
         try {
+            const socketId = socketRef.current?.id;
+            if (!socketId) {
+                setLogs(["Socket connection is not ready. Please try again."]);
+                return;
+            }
             const { data } = await axios.post(
-                "http://localhost:9000/project",
+                "http://localhost:9100/project",
                 {
                     gitURL: repoURL,
-                    slug: projectId,
+                    socketId,
                 }
             );
 
@@ -80,12 +85,12 @@ export default function Home() {
                 setProjectId(projectSlug);
                 setDeployPreviewURL(url);
 
-                console.log(`Subscribing to logs:${projectSlug}`);
+                // console.log(`Subscribing to logs:${projectSlug}`);
 
-                socketRef.current?.emit(
-                    "subscribe",
-                    `logs:${projectSlug}`
-                );
+                // socketRef.current?.emit(
+                //     "subscribe",
+                //     `logs:${projectSlug}`
+                // );
             }
         } catch (error) {
             console.error("Deployment failed:", error);

@@ -6,6 +6,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt-get upgrade -y
 RUN apt-get install -y nodejs
 
+RUN npm install -g pnpm@10.33.4
 RUN apt-get install git -y
 
 WORKDIR /home/app
