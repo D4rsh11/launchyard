@@ -3,7 +3,7 @@ const httpProxy = require('http-proxy')
 
 const app = express()
 const PORT = 8000
- 
+
 const BASE_PATH = 'https://launchyard.s3.ap-south-1.amazonaws.com/__outputs'
 
 const proxy = httpProxy.createProxy()
