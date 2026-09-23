@@ -1,9 +1,9 @@
 "use client";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { GithubIcon } from "lucide-react";
 import { Fira_Code } from "next/font/google";
 import axios from "axios";
 
@@ -13,9 +13,7 @@ const firaCode = Fira_Code({ subsets: ["latin"] });
 
 export default function Home() {
   const [repoURL, setURL] = useState<string>("");
-
   const [logs, setLogs] = useState<string[]>([]);
-
   const [loading, setLoading] = useState(false);
 
   const [projectId, setProjectId] = useState<string | undefined>();
@@ -23,39 +21,68 @@ export default function Home() {
     string | undefined
   >();
 
+  const [deploymentComplete, setDeploymentComplete] = useState(false);
+
   const logContainerRef = useRef<HTMLElement>(null);
 
   const isValidURL: [boolean, string | null] = useMemo(() => {
     if (!repoURL || repoURL.trim() === "") return [false, null];
+
     const regex = new RegExp(
       /^(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/]+)\/([^\/]+)(?:\/)?$/
     );
+
     return [regex.test(repoURL), "Enter valid Github Repository URL"];
   }, [repoURL]);
 
   const handleClickDeploy = useCallback(async () => {
     setLoading(true);
+    setDeploymentComplete(false);
+    setLogs([]);
+    setDeployPreviewURL(undefined);
 
-    const { data } = await axios.post(`http://localhost:9001/project`, {
-      gitURL: repoURL,
-      slug: projectId,
-    });
+    try {
+      const { data } = await axios.post(`http://localhost:9001/project`, {
+        gitURL: repoURL,
+        slug: projectId,
+      });
 
-    if (data && data.data) {
-      const { projectSlug, url } = data.data;
-      setProjectId(projectSlug);
-      setDeployPreviewURL(url);
+      if (data && data.data) {
+        const { projectSlug, url } = data.data;
 
-      console.log(`Subscribing to logs:${projectSlug}`);
-      socket.emit("subscribe", `logs:${projectSlug}`);
+        setProjectId(projectSlug);
+        setDeployPreviewURL(url);
+
+        console.log(`Subscribing to logs:${projectSlug}`);
+
+        socket.emit("subscribe", `logs:${projectSlug}`);
+      }
+    } catch (error) {
+      console.error("Deployment failed:", error);
+      setLoading(false);
     }
   }, [projectId, repoURL]);
 
   const handleSocketIncommingMessage = useCallback((message: string) => {
-    console.log(`[Incomming Socket Message]:`, typeof message, message);
+    console.log(
+      `[Incomming Socket Message]:`,
+      typeof message,
+      message
+    );
+
     const { log } = JSON.parse(message);
+
     setLogs((prev) => [...prev, log]);
-    logContainerRef.current?.scrollIntoView({ behavior: "smooth" });
+
+    // Deployment is complete only after the builder finishes
+    if (log.trim() === "Done") {
+      setDeploymentComplete(true);
+      setLoading(false);
+    }
+
+    logContainerRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, []);
 
   useEffect(() => {
@@ -70,7 +97,6 @@ export default function Home() {
     <main className="flex justify-center items-center h-[100vh]">
       <div className="w-[600px]">
         <span className="flex justify-start items-center gap-2">
-          {/* <GithubIcon className="text-5xl" /> */}
           <Input
             disabled={loading}
             value={repoURL}
@@ -79,6 +105,7 @@ export default function Home() {
             placeholder="Github URL"
           />
         </span>
+
         <Button
           onClick={handleClickDeploy}
           disabled={!isValidURL[0] || loading}
@@ -86,12 +113,14 @@ export default function Home() {
         >
           {loading ? "In Progress" : "Deploy"}
         </Button>
-        {deployPreviewURL && (
+
+        {deploymentComplete && deployPreviewURL && (
           <div className="mt-2 bg-slate-900 py-4 px-2 rounded-lg">
             <p>
               Preview URL{" "}
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-sky-400 bg-sky-950 px-3 py-2 rounded-lg"
                 href={deployPreviewURL}
               >
@@ -100,6 +129,7 @@ export default function Home() {
             </p>
           </div>
         )}
+
         {logs.length > 0 && (
           <div
             className={`${firaCode.className} text-sm text-green-500 logs-container mt-5 border-green-500 border-2 rounded-lg p-4 h-[300px] overflow-y-auto`}
@@ -107,9 +137,15 @@ export default function Home() {
             <pre className="flex flex-col gap-1">
               {logs.map((log, i) => (
                 <code
-                  ref={logs.length - 1 === i ? logContainerRef : undefined}
+                  ref={
+                    logs.length - 1 === i
+                      ? logContainerRef
+                      : undefined
+                  }
                   key={i}
-                >{`> ${log}`}</code>
+                >
+                  {`> ${log}`}
+                </code>
               ))}
             </pre>
           </div>
