@@ -1,51 +1,102 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #020817;
+  /* Core colors - Near-monochromatic, warm grays, single RGB gradient hairline */
+  --background: #fafafa;
+  --foreground: #0a0a0a;
 
-  --primary: #18181b;
+  --primary: #0a0a0a;
   --primary-foreground: #fafafa;
 
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  --secondary: #f0f0f0;
+  --secondary-foreground: #0a0a0a;
 
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
 
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #f0f0f0;
+  --muted-foreground: #737373;
 
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  --accent: #f0f0f0;
+  --accent-foreground: #0a0a0a;
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #18181b;
+  --border: #dbdbdb;
+  --input: #dbdbdb;
+  --ring: #0a0a0a;
+
+  /* Speakeasy-inspired brand tokens */
+  /* Obsidian - primary CTA background */
+  --ly-obsidian: #333333;
+  --ly-obsidian-hover: #1a1a1a;
+
+  /* Warm grays */
+  --ly-ink: #0a0a0a;
+  --ly-ink-soft: #525252;
+  --ly-ink-muted: #a3a3a3;
+
+  --ly-surface: #fafafa;
+  --ly-surface-2: #f0f0f0;
+  --ly-surface-3: #e5e5e5;
+
+  --ly-border: #dbdbdb;
+  --ly-border-strong: #d4d4d4;
+
+  /* Accent - subtle orange (from original brand) */
+  --ly-orange: #ff5a1f;
+  --ly-orange-soft: #fff1ea;
+
+  /* RGB gradient hairline (speakeasy signature) */
+  --ly-gradient-hairline: linear-gradient(
+    90deg,
+    #ff6b35,
+    #f7931e,
+    #ffcc00,
+    #4ecdc4,
+    #45b7d1,
+    #9b59b6,
+    #ff6b35
+  );
 }
 
 .dark {
-  --background: #020817;
+  --background: #0a0a0a;
   --foreground: #fafafa;
 
   --primary: #fafafa;
-  --primary-foreground: #18181b;
+  --primary-foreground: #0a0a0a;
 
-  --secondary: #27272a;
+  --secondary: #1a1a1a;
   --secondary-foreground: #fafafa;
 
-  --destructive: #7f1d1d;
+  --destructive: #ef4444;
   --destructive-foreground: #fafafa;
 
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
+  --muted: #1a1a1a;
+  --muted-foreground: #a3a3a3;
 
-  --accent: #27272a;
+  --accent: #1a1a1a;
   --accent-foreground: #fafafa;
 
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #d4d4d8;
+  --border: #333333;
+  --input: #333333;
+  --ring: #fafafa;
+
+  --ly-obsidian: #fafafa;
+  --ly-obsidian-hover: #e5e5e5;
+
+  --ly-ink: #fafafa;
+  --ly-ink-soft: #a3a3a3;
+  --ly-ink-muted: #737373;
+
+  --ly-surface: #0a0a0a;
+  --ly-surface-2: #1a1a1a;
+  --ly-surface-3: #262626;
+
+  --ly-border: #333333;
+  --ly-border-strong: #404040;
+
+  --ly-orange: #ff5a1f;
+  --ly-orange-soft: #3d1e0a;
 }
 
 @theme inline {
@@ -70,6 +121,40 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Speakeasy tokens */
+  --color-ly-obsidian: var(--ly-obsidian);
+  --color-ly-obsidian-hover: var(--ly-obsidian-hover);
+
+  --color-ly-ink: var(--ly-ink);
+  --color-ly-ink-soft: var(--ly-ink-soft);
+  --color-ly-ink-muted: var(--ly-ink-muted);
+
+  --color-ly-surface: var(--ly-surface);
+  --color-ly-surface-2: var(--ly-surface-2);
+  --color-ly-surface-3: var(--ly-surface-3);
+
+  --color-ly-border: var(--ly-border);
+  --color-ly-border-strong: var(--ly-border-strong);
+
+  --color-ly-orange: var(--ly-orange);
+  --color-ly-orange-soft: var(--ly-orange-soft);
+
+  /* Font families - Speakeasy "Refined Tech" stack */
+  /* Display: Fraunces (Tobias substitute - thin serif with optical sizes) */
+  --font-display: var(--font-fraunces);
+  /* Body: Inter (ABC Diatype substitute) */
+  --font-sans: var(--font-inter);
+  /* Mono: JetBrains Mono (ABC Diatype Mono substitute) */
+  --font-mono: var(--font-jetbrains-mono);
+  /* UI: System font stack */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Font feature settings for OpenType features (calt, rlig, ss01) */
+.font-feature-default {
+  font-variant-ligatures: common-ligatures contextual;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
 }
 
 * {
@@ -85,4 +170,157 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans), var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+/* Speakeasy-style RGB gradient hairline at top of page */
+.ly-gradient-hairline {
+  height: 1px;
+  background: var(--ly-gradient-hairline);
+  background-size: 300% 100%;
+  animation: ly-gradient-shift 20s linear infinite;
+}
+
+@keyframes ly-gradient-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Selection styles */
+::selection {
+  background: var(--ly-ink);
+  color: var(--background);
+}
+
+.dark ::selection {
+  background: var(--ly-ink);
+  color: var(--background);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Flow animation for diagrams */
+.ly-flow-dash line {
+  animation: ly-dash 2.4s linear infinite;
+}
+
+@keyframes ly-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Subtle grid background */
+.ly-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(10, 10, 10, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.dark .ly-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(250, 250, 250, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(250, 250, 250, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Utility classes for speakeasy typography */
+.ly-display {
+  font-family: var(--font-display), var(--font-ui);
+  font-weight: 100;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.04em;
+  line-height: 1.0;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+.ly-display-sm {
+  font-family: var(--font-display), var(--font-ui);
+  font-weight: 100;
+  font-variation-settings: "opsz" 64;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+.ly-heading {
+  font-family: var(--font-sans), var(--font-ui);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+.ly-body {
+  font-family: var(--font-sans), var(--font-ui);
+  font-weight: 400;
+  letter-spacing: 0.002em;
+  line-height: 1.65;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+.ly-body-sm {
+  font-family: var(--font-sans), var(--font-ui);
+  font-weight: 400;
+  letter-spacing: 0.002em;
+  line-height: 1.6;
+  font-feature-settings: "calt" 1, "rlig" 1, "ss01" 1;
+}
+
+.ly-caption {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.ly-code {
+  font-family: var(--font-mono), var(--font-ui);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+.ly-button {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.5;
+  border-radius: 4px;
+  transition: all 150ms ease;
+}
+
+/* Border-based depth (speakeasy style - 1px borders instead of shadows) */
+.ly-card {
+  border: 1px solid var(--ly-border);
+  background: var(--background);
+  transition: border-color 150ms ease;
+}
+
+.ly-card:hover {
+  border-color: var(--ly-border-strong);
+}
+
+/* Focus styles */
+.ly-focus:focus-visible {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--ly-ink);
+  ring-offset: 2px;
+  ring-offset-color: var(--background);
 }
